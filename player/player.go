@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/prateek2408/utils"
+	"github.com/prateek2408/music-player/utils"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,5 +36,11 @@ func loadMainFrame(w http.ResponseWriter, r *http.Request) {
 func File(w http.ResponseWriter, r *http.Request) {
 	path := filepath.Join(root, r.URL.Path[len(filePrefix):])
 	stat, err := os.Stat(path)
-	utils.chk(err)
+	utils.Chk(err)
+	if stat.IsDir() {
+		serveDir(w, r, path)
+	}
+	http.ServeFile(w, r, path)
 }
+
+func serveDir()
