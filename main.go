@@ -23,7 +23,6 @@ func main() {
 			log.Fatal("Can't open ~/Music directory")
 		}
 	}
-
 	fileList, err := getSongList(songDir)
 	if err != nil {
 		log.Fatal("Can't get song list")
