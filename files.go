@@ -56,7 +56,29 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	return token
 }
 
-func getClient(tokenFile string, config *oauth2.Config) *http.Client {
+func getClient(config *oauth2.Config) *http.Client {
+	b, err := ioutil.ReadFile("credentials.json")
+	if err != nil {
+		log.Fatalf("Unable to read client secret file: %v\n", err)
+	}
+
+	config, err := google.ConfigFromJson(b, drive.DriveMetadataReadOnlyScope)
+	if err != nil {
+		log.Fatalf("Unable to parse client secret file to config: %v\n", config)
+	}
+	client := getClient(config)
+
+	srv, err := drive.New(client)
+	if err != nil {
+		log.Fatalf("Unable to create a client for Drive: %v\n", err)
+	}
+
+	r, err := srv.Files.List().PageSize(10).
+		Fields("nextPageToken, files(id, name)").Do()
+	if err != nil {
+		log.Fatalf("Unable to retrieve files")
+	}
+
 	token, err := getTokenFromFile(tokenFile)
 	if err != nil {
 		//Falling to Read from Web.
